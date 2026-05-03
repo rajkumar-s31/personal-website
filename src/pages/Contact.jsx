@@ -24,9 +24,23 @@ export default function Contact() {
                     </div>
 
                     <div className="cardPro">
+                        <div className="muted small">GitHub</div>
+                        <a className="link" href={contact.github} target="_blank" rel="noreferrer">
+                            GitHub Profile
+                        </a>
+                    </div>
+
+                    <div className="cardPro">
                         <div className="muted small">Instagram</div>
                         <a className="link" href={contact.instagram} target="_blank" rel="noreferrer">
                             Instagram Profile
+                        </a>
+                    </div>
+
+                    <div className="cardPro">
+                        <div className="muted small">Facebook</div>
+                        <a className="link" href={contact.facebook} target="_blank" rel="noreferrer">
+                            Facebook Profile
                         </a>
                     </div>
                 </div>
