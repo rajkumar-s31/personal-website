@@ -1,12 +1,12 @@
 export const profile = {
-    name: "Vaseekaran S L",
+    name: "rajkumar S L",
     headline: "Mechanical Design Engineer",
     location: "Tokyo, Japan",
     contact: {
-        email: "slvaseekaran@gmail.com",
-        linkedin: "https://www.linkedin.com/in/vaseekaran-s-l-553045215",
+        email: "slrajkumar@gmail.com",
+        linkedin: "https://www.linkedin.com/in/rajkumar-s-l-553045215",
         github: "https://github.com/heyvasee",
-        instagram: "https://www.instagram.com/vaseekaran_sl",
+        instagram: "https://www.instagram.com/rajkumar_sl",
     },
     summary:
         "A dedicated Mechanical Engineer driven by an interest in research and development. I recognized for unwavering integrity, effective leadership, and a commitment to excellence. I know for motivating and delivering ingenious engineering solutions that push the boundaries of possibility.",
