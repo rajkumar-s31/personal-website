@@ -625,3 +625,337 @@ hr {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px;
 }
+
+/* Personal Budget */
+.budgetGrid {
+    --budget-income: #3a86ff;
+    --budget-savings: #06d6a0;
+    --budget-expenses: #ff6b6b;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 980px) {
+    .budgetGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.budgetCard {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--card);
+    padding: 20px;
+}
+
+.budgetCardHead {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.budgetChartRow {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 20px;
+    align-items: center;
+}
+
+@media (max-width: 680px) {
+    .budgetChartRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+.budgetPie {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    margin-inline: auto;
+    display: grid;
+    place-items: center;
+    box-shadow: var(--shadow);
+}
+
+.budgetPieCenter {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: var(--card);
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 8px;
+    border: 1px solid var(--border-light);
+}
+
+.budgetTotal {
+    font-weight: 700;
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+.budgetLegend {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+}
+
+.budgetLegendItem {
+    display: grid;
+    grid-template-columns: 12px 1fr;
+    gap: 10px;
+    align-items: start;
+}
+
+.budgetSwatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-top: 6px;
+}
+
+.budgetLegendContent {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: var(--surface);
+}
+
+.budgetLegendTop {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.budgetPercent {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.budgetControls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 240px)) 1fr;
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 18px;
+}
+
+.budgetStorageNote {
+    margin: 0 0 14px;
+}
+
+.budgetActions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.budgetControlGroup {
+    display: grid;
+    gap: 6px;
+}
+
+.budgetControlGrow {
+    min-width: 240px;
+}
+
+.budgetLabel {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.budgetInput {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.budgetInput:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
+}
+
+.budgetForm {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 20px;
+}
+
+.budgetTableWrap {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--card);
+    padding: 16px;
+    margin-top: 20px;
+}
+
+.budgetTableScroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.budgetTable {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+}
+
+.budgetTable th,
+.budgetTable td {
+    border-bottom: 1px solid var(--border-light);
+    padding: 10px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.budgetTable th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+}
+
+.budgetEmpty {
+    text-align: center !important;
+    color: var(--muted);
+    padding: 20px !important;
+}
+
+.budgetDeleteBtn {
+    padding: 7px 12px;
+    font-size: 0.85rem;
+}
+
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+@media (max-width: 980px) {
+    .budgetControls {
+        grid-template-columns: 1fr;
+    }
+
+    .budgetActions {
+        justify-content: flex-start;
+    }
+}
+
+/* ── Login Page ────────────────────────────────────────────── */
+
+.loginPage {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.loginCard {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 16px;
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+}
+
+.loginLogo {
+    font-size: 2.5rem;
+    color: var(--accent, #3a86ff);
+    margin-bottom: 1rem;
+}
+
+.loginTitle {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.loginSubtitle {
+    margin-bottom: 2rem;
+    font-size: 0.97rem;
+}
+
+.loginError {
+    background: #fff0f0;
+    color: #c0392b;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.loginGoogleBtn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+}
+
+.loginGoogleIcon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* ── Navbar user area ───────────────────────────────────────── */
+
+.navActions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.navUser {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navAvatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border, #e5e7eb);
+}
+
+.navUserName {
+    font-size: 0.88rem;
+    font-weight: 500;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.btn.small {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+}

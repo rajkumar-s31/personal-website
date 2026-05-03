@@ -5,6 +5,7 @@ import Curricular from '../pages/Curricular';
 import CoCurricular from '../pages/CoCurricular';
 import ExtraCurricular from '../pages/ExtraCurricular';
 import Contact from '../pages/Contact';
+npm startimport Budget from '../pages/Budget';
 
 const AppRoutes = () => {
     return (
@@ -13,6 +14,7 @@ const AppRoutes = () => {
             <Route path="/curricular" element={<Curricular />} />
             <Route path="/co-curricular" element={<CoCurricular />} />
             <Route path="/extra-curricular" element={<ExtraCurricular />} />
+            <Route path="/budget" element={<Budget />} />
             <Route path="/contact" element={<Contact />} />
         </Routes>
     );
