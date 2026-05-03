@@ -11,26 +11,26 @@ export const profile = {
         x: "https://x.com/rajkumar_s31",
     },
     summary:
-        "A dedicated Mechanical Engineer driven by an interest in research and development. I recognized for unwavering integrity, effective leadership, and a commitment to excellence. I know for motivating and delivering ingenious engineering solutions that push the boundaries of possibility.",
+        "A passionate Computer Science Engineer with a keen interest in software development and innovation. Recognized for strong integrity, effective leadership, and a dedication to excellence. Known for inspiring teams and delivering innovative technical solutions that drive progress.",
 
     education: [
         {
-            institute: "Kumaraguru College of Technology",
-            period: "Oct 2020 – May 2024",
-            program: "BE, Mechanical Engineering",
-            highlights: ["CGPA: 8.74"],
+            institute: "Sri Sivasubramaniya Nadar College of Engineering.",
+            period: "Oct 2021 - May 2025",
+            program: "BE, Computer and Science Engineering",
+            highlights: ["CGPA: 7.44"],
         },
         {
-            institute: "AKT AMHSS",
-            period: "Jun 2019 – Apr 2020",
+            institute: "CHSS Koyambedu",
+            period: "Jun 2020 - Apr 2021",
             program: "Class 12th",
-            highlights: ["Percentage: 85.66%"],
+            highlights: ["Percentage: 90.99%"],
         },
         {
-            institute: "AKT AMHSS",
-            period: "Jun 2017 – Apr 2018",
+            institute: "CHSS Koyambedu",
+            period: "Jun 2018 - Apr 2019",
             program: "Class 10th",
-            highlights: ["Percentage: 94.66%"],
+            highlights: ["Percentage: 88%"],
         },
     ],
 
