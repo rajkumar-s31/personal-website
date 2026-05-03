@@ -1,0 +1,26 @@
+{
+  "photos": {
+    "Chennai": [
+      "IMG_8624.jpg"
+    ],
+    "Tokyo": [
+      "IMG_8349.jpeg"
+    ]
+  },
+  "videos": {
+    "Chennai": [],
+    "Tokyo": [
+      "IMG_8050.mp4"
+    ]
+  },
+  "stories": [
+    "IMG_8627.jpg"
+  ],
+  "poems": [
+    "0A71A86F-3152-4711-B48D-956FAED36021.JPEG"
+  ],
+  "archive": {
+    "photos": [],
+    "videos": []
+  }
+}
