@@ -5,10 +5,10 @@ export const profile = {
     contact: {
         email: "rajkumar3110003@gmail.com",
         linkedin: "https://www.linkedin.com/in/rajkumar-s31/",
-        github: "https://github.com/rajkumar-s",
+        github: "https://github.com/rajkumar-s31",
         instagram: "https://www.instagram.com/rajkumar_s31/",
         facebook: "https://www.facebook.com/rajkumars3110/",
-        twitter: "https://x.com/rajkumar_s31",
+        x: "https://x.com/rajkumar_s31",
     },
     summary:
         "A dedicated Mechanical Engineer driven by an interest in research and development. I recognized for unwavering integrity, effective leadership, and a commitment to excellence. I know for motivating and delivering ingenious engineering solutions that push the boundaries of possibility.",

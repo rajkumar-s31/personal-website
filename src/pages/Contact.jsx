@@ -19,28 +19,35 @@ export default function Contact() {
                     <div className="cardPro">
                         <div className="muted small">LinkedIn</div>
                         <a className="link" href={contact.linkedin} target="_blank" rel="noreferrer">
-                            LinkedIn Profile
+                            {contact.linkedin}
                         </a>
                     </div>
 
                     <div className="cardPro">
                         <div className="muted small">GitHub</div>
                         <a className="link" href={contact.github} target="_blank" rel="noreferrer">
-                            GitHub Profile
+                            {contact.github}
                         </a>
                     </div>
 
                     <div className="cardPro">
                         <div className="muted small">Instagram</div>
                         <a className="link" href={contact.instagram} target="_blank" rel="noreferrer">
-                            Instagram Profile
+                            {contact.instagram}
                         </a>
                     </div>
 
                     <div className="cardPro">
                         <div className="muted small">Facebook</div>
                         <a className="link" href={contact.facebook} target="_blank" rel="noreferrer">
-                            Facebook Profile
+                            {contact.facebook}
+                        </a>
+                    </div>
+
+                    <div className="cardPro">
+                        <div className="muted small">X</div>
+                        <a className="link" href={contact.x} target="_blank" rel="noreferrer">
+                            {contact.x}
                         </a>
                     </div>
                 </div>
