@@ -5,7 +5,7 @@ import Curricular from '../pages/Curricular';
 import CoCurricular from '../pages/CoCurricular';
 import ExtraCurricular from '../pages/ExtraCurricular';
 import Contact from '../pages/Contact';
-npm startimport Budget from '../pages/Budget';
+import Budget from '../pages/Budget';
 
 const AppRoutes = () => {
     return (

@@ -5,6 +5,7 @@ import { useAuth } from "../app/AuthContext";
 export default function Navbar({ theme, onToggleTheme }) {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const isLightTheme = theme === "light";
 
     function handleLogout() {
         logout();
@@ -61,8 +62,25 @@ export default function Navbar({ theme, onToggleTheme }) {
                             Sign In
                         </NavLink>
                     )}
-                    <button type="button" className="btn" onClick={onToggleTheme} aria-label="Toggle theme">
-                        {theme === "light" ? "Dark" : "Light"}
+                    <button
+                        type="button"
+                        className={`themeToggle ${isLightTheme ? "is-light" : "is-dark"}`}
+                        onClick={onToggleTheme}
+                        aria-label={`Switch to ${isLightTheme ? "dark" : "light"} mode`}
+                        title={`Switch to ${isLightTheme ? "dark" : "light"} mode`}
+                    >
+                        <span className="themeToggleTrack" aria-hidden="true">
+                            <span className="themeToggleSky">
+                                <span className="themeToggleCloud themeToggleCloudOne" />
+                                <span className="themeToggleCloud themeToggleCloudTwo" />
+                            </span>
+                            <span className="themeToggleNight">
+                                <span className="themeToggleStar themeToggleStarOne" />
+                                <span className="themeToggleStar themeToggleStarTwo" />
+                                <span className="themeToggleStar themeToggleStarThree" />
+                            </span>
+                            <span className="themeToggleThumb">{isLightTheme ? "☀" : "☾"}</span>
+                        </span>
                     </button>
                 </div>
             </div>

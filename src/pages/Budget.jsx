@@ -7,6 +7,11 @@ import {
 } from "../services/budgetCloudStorage";
 
 const CATEGORY_OPTIONS = ["Income", "Savings", "Expenses"];
+const SUBCATEGORY_OPTIONS = {
+    Income: ["My Income", "Amma's Income"],
+    Savings: ["FD", "Invest"],
+    Expenses: ["Rent", "Transport", "Food"],
+};
 const CATEGORY_COLOR = {
     Income: "#3a86ff",
     Savings: "#06d6a0",
@@ -35,6 +40,20 @@ function formatCurrency(value) {
     });
 }
 
+function getDefaultSubcategory(category) {
+    const options = SUBCATEGORY_OPTIONS[category] || [];
+    return options[0] || "";
+}
+
+function normalizeSubcategory(category, subcategory) {
+    const options = SUBCATEGORY_OPTIONS[category] || [];
+    if (options.includes(subcategory)) {
+        return subcategory;
+    }
+
+    return getDefaultSubcategory(category);
+}
+
 function normalizeEntries(source) {
     if (!Array.isArray(source)) {
         return [];
@@ -54,6 +73,7 @@ function normalizeEntries(source) {
         .map((item) => ({
             ...item,
             amount: Number(item.amount),
+            subcategory: normalizeSubcategory(item.category, item.subcategory),
         }));
 }
 
@@ -87,6 +107,29 @@ function summarize(entries) {
         { label: "Savings", value: totals.Savings, color: CATEGORY_COLOR.Savings },
         { label: "Expenses", value: totals.Expenses, color: CATEGORY_COLOR.Expenses },
     ];
+}
+
+function buildYearlyMatrix(entries, year) {
+    const base = MONTHS.map((month) => ({
+        month: month.label,
+        Income: 0,
+        Savings: 0,
+        Expenses: 0,
+    }));
+
+    entries
+        .filter((item) => item.year === year)
+        .forEach((item) => {
+            const target = base[item.month - 1];
+            if (target) {
+                target[item.category] += Number(item.amount);
+            }
+        });
+
+    return base.map((row) => ({
+        ...row,
+        Total: row.Income + row.Savings + row.Expenses,
+    }));
 }
 
 function csvEscape(value) {
@@ -237,6 +280,8 @@ export default function Budget() {
     const [entries, setEntries] = useState([]);
     const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(currentYear);
+    const [activeTab, setActiveTab] = useState("monthly");
+    const [editingEntryId, setEditingEntryId] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [storageMessage, setStorageMessage] = useState(
@@ -246,6 +291,7 @@ export default function Budget() {
     );
     const [formData, setFormData] = useState({
         category: "Expenses",
+        subcategory: getDefaultSubcategory("Expenses"),
         amount: "",
         note: "",
     });
@@ -297,6 +343,36 @@ export default function Budget() {
 
     const monthlySummary = useMemo(() => summarize(monthlyEntries), [monthlyEntries]);
     const yearlySummary = useMemo(() => summarize(yearlyEntries), [yearlyEntries]);
+    const monthlyEntriesByCategory = useMemo(
+        () => CATEGORY_OPTIONS.map((category) => ({
+            category,
+            entries: monthlyEntries.filter((item) => item.category === category),
+            total: monthlyEntries
+                .filter((item) => item.category === category)
+                .reduce((sum, item) => sum + item.amount, 0),
+        })),
+        [monthlyEntries]
+    );
+    const yearlyMatrix = useMemo(
+        () => buildYearlyMatrix(entries, selectedYear),
+        [entries, selectedYear]
+    );
+    const monthlyTotal = useMemo(
+        () => monthlySummary.reduce((sum, item) => sum + item.value, 0),
+        [monthlySummary]
+    );
+    const yearlyTotal = useMemo(
+        () => yearlySummary.reduce((sum, item) => sum + item.value, 0),
+        [yearlySummary]
+    );
+    const yearlyMatrixGrandTotal = useMemo(
+        () => yearlyMatrix.reduce((sum, row) => sum + row.Total, 0),
+        [yearlyMatrix]
+    );
+    const activeSubcategoryOptions = useMemo(
+        () => SUBCATEGORY_OPTIONS[formData.category] || [],
+        [formData.category]
+    );
 
     async function persist(nextEntries) {
         const normalized = normalizeEntries(nextEntries);
@@ -320,9 +396,36 @@ export default function Budget() {
             return;
         }
 
+        if (editingEntryId) {
+            const nextEntries = entries.map((item) => {
+                if (item.id !== editingEntryId) {
+                    return item;
+                }
+
+                return {
+                    ...item,
+                    category: formData.category,
+                    subcategory: normalizeSubcategory(formData.category, formData.subcategory),
+                    amount,
+                    note: formData.note.trim(),
+                };
+            });
+
+            await persist(nextEntries);
+            setEditingEntryId(null);
+            setFormData({
+                category: "Expenses",
+                subcategory: getDefaultSubcategory("Expenses"),
+                amount: "",
+                note: "",
+            });
+            return;
+        }
+
         const entry = {
             id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
             category: formData.category,
+            subcategory: normalizeSubcategory(formData.category, formData.subcategory),
             amount,
             note: formData.note.trim(),
             month: selectedMonth,
@@ -333,6 +436,27 @@ export default function Budget() {
         const nextEntries = [...entries, entry];
         await persist(nextEntries);
         setFormData((prev) => ({ ...prev, amount: "", note: "" }));
+    }
+
+    function handleStartEdit(entry) {
+        setActiveTab("monthly");
+        setEditingEntryId(entry.id);
+        setFormData({
+            category: entry.category,
+            subcategory: normalizeSubcategory(entry.category, entry.subcategory),
+            amount: String(entry.amount),
+            note: entry.note || "",
+        });
+    }
+
+    function handleCancelEdit() {
+        setEditingEntryId(null);
+        setFormData({
+            category: "Expenses",
+            subcategory: getDefaultSubcategory("Expenses"),
+            amount: "",
+            note: "",
+        });
     }
 
     async function handleDeleteEntry(id) {
@@ -347,10 +471,11 @@ export default function Budget() {
             ["Month", monthLabel],
             ["Year", selectedYear],
             [],
-            ["Date", "Category", "Amount", "Note"],
+            ["Date", "Category", "Sub Category", "Amount", "Note"],
             ...monthlyEntries.map((item) => [
                 item.createdAt ? new Date(item.createdAt).toLocaleDateString("en-IN") : "",
                 item.category,
+                item.subcategory || "",
                 item.amount,
                 item.note,
             ]),
@@ -367,11 +492,12 @@ export default function Budget() {
             ["Report", "Yearly Budget"],
             ["Year", selectedYear],
             [],
-            ["Date", "Month", "Category", "Amount", "Note"],
+            ["Date", "Month", "Category", "Sub Category", "Amount", "Note"],
             ...yearlyEntries.map((item) => [
                 item.createdAt ? new Date(item.createdAt).toLocaleDateString("en-IN") : "",
                 MONTHS.find((m) => m.value === item.month)?.label || item.month,
                 item.category,
+                item.subcategory || "",
                 item.amount,
                 item.note,
             ]),
@@ -408,6 +534,7 @@ export default function Budget() {
             <tr>
                 <td>${escapeHtml(item.createdAt ? new Date(item.createdAt).toLocaleDateString("en-IN") : "-")}</td>
                 <td>${escapeHtml(item.category)}</td>
+                <td>${escapeHtml(item.subcategory || "-")}</td>
                 <td>${escapeHtml(formatCurrency(item.amount))}</td>
                 <td>${escapeHtml(item.note || "-")}</td>
             </tr>
@@ -440,8 +567,8 @@ export default function Budget() {
 
                     <h2 style="margin-top: 24px;">Monthly Entries</h2>
                     <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
-                        <tr><th>Date</th><th>Category</th><th>Amount</th><th>Note</th></tr>
-                        ${entryRowsHtml || "<tr><td colspan=\"4\">No entries for selected month.</td></tr>"}
+                        <tr><th>Date</th><th>Category</th><th>Sub Category</th><th>Amount</th><th>Note</th></tr>
+                        ${entryRowsHtml || "<tr><td colspan=\"5\">No entries for selected month.</td></tr>"}
                     </table>
                 </body>
             </html>
@@ -452,12 +579,14 @@ export default function Budget() {
 
 
     const selectedMonthLabel = MONTHS.find((item) => item.value === selectedMonth)?.label;
+    const monthlyNet = monthlySummary[0].value - monthlySummary[1].value - monthlySummary[2].value;
+    const yearlyNet = yearlySummary[0].value - yearlySummary[1].value - yearlySummary[2].value;
 
     return (
         <div className="stack">
             <Section
                 title="Personal Budget"
-                subtitle="Track entries, visualize monthly/yearly split, and export reports"
+                subtitle="Track income, savings, expenses and switch between Monthly, Yearly, and Excel-style views"
             >
                 <p className="budgetStorageNote muted">{storageMessage}</p>
 
@@ -495,12 +624,69 @@ export default function Budget() {
                             Export Monthly CSV
                         </button>
                         <button type="button" className="btn ghost" onClick={exportYearlyCSV}>
-                            Export Yearly CSV
+                            Export Excel CSV
                         </button>
                         <button type="button" className="btn ghost" onClick={exportDocReport}>
                             Export DOC Report
                         </button>
                     </div>
+                </div>
+
+                <div className="budgetKpiGrid" aria-label="Budget snapshot">
+                    <article className="budgetKpiCard">
+                        <p className="small muted">Monthly Total</p>
+                        <h3 className="h3">{formatCurrency(monthlyTotal)}</h3>
+                        <p className="small muted">{selectedMonthLabel} {selectedYear}</p>
+                    </article>
+                    <article className="budgetKpiCard">
+                        <p className="small muted">Monthly Net</p>
+                        <h3 className={`h3 ${monthlyNet >= 0 ? "budgetPositive" : "budgetNegative"}`}>
+                            {formatCurrency(monthlyNet)}
+                        </h3>
+                        <p className="small muted">Income - Savings - Expenses</p>
+                    </article>
+                    <article className="budgetKpiCard">
+                        <p className="small muted">Yearly Total</p>
+                        <h3 className="h3">{formatCurrency(yearlyTotal)}</h3>
+                        <p className="small muted">All months in {selectedYear}</p>
+                    </article>
+                    <article className="budgetKpiCard">
+                        <p className="small muted">Yearly Net</p>
+                        <h3 className={`h3 ${yearlyNet >= 0 ? "budgetPositive" : "budgetNegative"}`}>
+                            {formatCurrency(yearlyNet)}
+                        </h3>
+                        <p className="small muted">Income - Savings - Expenses</p>
+                    </article>
+                </div>
+
+                <div className="budgetTabs" role="tablist" aria-label="Budget Views">
+                    <button
+                        type="button"
+                        className={`budgetTab ${activeTab === "monthly" ? "active" : ""}`}
+                        onClick={() => setActiveTab("monthly")}
+                        role="tab"
+                        aria-selected={activeTab === "monthly"}
+                    >
+                        Monthly Dashboard
+                    </button>
+                    <button
+                        type="button"
+                        className={`budgetTab ${activeTab === "yearly" ? "active" : ""}`}
+                        onClick={() => setActiveTab("yearly")}
+                        role="tab"
+                        aria-selected={activeTab === "yearly"}
+                    >
+                        Yearly Chart
+                    </button>
+                    <button
+                        type="button"
+                        className={`budgetTab ${activeTab === "excel" ? "active" : ""}`}
+                        onClick={() => setActiveTab("excel")}
+                        role="tab"
+                        aria-selected={activeTab === "excel"}
+                    >
+                        Excel View
+                    </button>
                 </div>
 
                 <form className="budgetForm" onSubmit={handleAddEntry}>
@@ -510,11 +696,33 @@ export default function Budget() {
                             id="entry-category"
                             className="budgetInput"
                             value={formData.category}
-                            onChange={(event) => setFormData((prev) => ({ ...prev, category: event.target.value }))}
+                            onChange={(event) => {
+                                const nextCategory = event.target.value;
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    category: nextCategory,
+                                    subcategory: getDefaultSubcategory(nextCategory),
+                                }));
+                            }}
                             disabled={isLoading || isSaving}
                         >
                             {CATEGORY_OPTIONS.map((category) => (
                                 <option key={category} value={category}>{category}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="budgetControlGroup">
+                        <label className="budgetLabel" htmlFor="entry-subcategory">Sub Category</label>
+                        <select
+                            id="entry-subcategory"
+                            className="budgetInput"
+                            value={formData.subcategory}
+                            onChange={(event) => setFormData((prev) => ({ ...prev, subcategory: event.target.value }))}
+                            disabled={isLoading || isSaving}
+                        >
+                            {activeSubcategoryOptions.map((subcategory) => (
+                                <option key={subcategory} value={subcategory}>{subcategory}</option>
                             ))}
                         </select>
                     </div>
@@ -550,71 +758,136 @@ export default function Budget() {
                     </div>
 
                     <button type="submit" className="btn" disabled={isLoading || isSaving}>
-                        {isSaving ? "Saving..." : "Add Entry"}
+                        {isSaving ? "Saving..." : editingEntryId ? "Update Entry" : "Add Entry"}
                     </button>
+                    {editingEntryId && (
+                        <button
+                            type="button"
+                            className="btn ghost"
+                            onClick={handleCancelEdit}
+                            disabled={isLoading || isSaving}
+                        >
+                            Cancel Edit
+                        </button>
+                    )}
                 </form>
 
-                <div className="budgetGrid">
-                    <BudgetPieCard
-                        title={`Monthly Budget (${selectedMonthLabel} ${selectedYear})`}
-                        subtitle="Income, savings and expenses for selected month"
-                        data={monthlySummary}
-                    />
-                    <BudgetPieCard
-                        title={`Yearly Budget (${selectedYear})`}
-                        subtitle="Income, savings and expenses across the selected year"
-                        data={yearlySummary}
-                    />
-                </div>
+                {activeTab === "monthly" && (
+                    <>
+                        <div className="budgetGrid budgetSingleColumn">
+                            <BudgetPieCard
+                                title={`Monthly Budget (${selectedMonthLabel} ${selectedYear})`}
+                                subtitle="Income, savings and expenses for selected month"
+                                data={monthlySummary}
+                            />
+                        </div>
 
-                <div className="budgetTableWrap">
-                    <div className="cardTop">
-                        <h3 className="h3">Entries for {selectedMonthLabel} {selectedYear}</h3>
-                        <span className="pill">{monthlyEntries.length} records</span>
+                        <div className="budgetCategoryGrid">
+                            {monthlyEntriesByCategory.map((group) => (
+                                <div className="budgetTableWrap" key={group.category}>
+                                    <div className="cardTop">
+                                        <h3 className="h3">{group.category} Entries</h3>
+                                        <span className="pill" style={{ color: CATEGORY_COLOR[group.category] }}>
+                                            {formatCurrency(group.total)}
+                                        </span>
+                                    </div>
+
+                                    <div className="budgetTableScroll">
+                                        <table className="budgetTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Sub Category</th>
+                                                    <th>Amount</th>
+                                                    <th>Note</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {group.entries.length === 0 ? (
+                                                    <tr>
+                                                        <td colSpan="5" className="budgetEmpty">
+                                                            No {group.category.toLowerCase()} entries yet for this month.
+                                                        </td>
+                                                    </tr>
+                                                ) : group.entries.map((item) => (
+                                                    <tr key={item.id}>
+                                                        <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString("en-IN") : "-"}</td>
+                                                        <td>{item.subcategory || "-"}</td>
+                                                        <td>{formatCurrency(item.amount)}</td>
+                                                        <td>{item.note || "-"}</td>
+                                                        <td>
+                                                            <button
+                                                                type="button"
+                                                                className="btn ghost budgetDeleteBtn"
+                                                                onClick={() => handleStartEdit(item)}
+                                                                disabled={isLoading || isSaving}
+                                                            >
+                                                                Edit
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                className="btn ghost budgetDeleteBtn"
+                                                                onClick={() => handleDeleteEntry(item.id)}
+                                                                disabled={isLoading || isSaving}
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                )}
+
+                {activeTab === "yearly" && (
+                    <div className="budgetGrid budgetSingleColumn">
+                        <BudgetPieCard
+                            title={`Yearly Budget (${selectedYear})`}
+                            subtitle="Income, savings and expenses across the selected year"
+                            data={yearlySummary}
+                        />
                     </div>
+                )}
 
-                    <div className="budgetTableScroll">
-                        <table className="budgetTable">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Category</th>
-                                    <th>Amount</th>
-                                    <th>Note</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {monthlyEntries.length === 0 ? (
+                {activeTab === "excel" && (
+                    <div className="budgetTableWrap">
+                        <div className="cardTop">
+                            <h3 className="h3">Excel View for {selectedYear}</h3>
+                            <span className="pill">Total: {formatCurrency(yearlyMatrixGrandTotal)}</span>
+                        </div>
+
+                        <div className="budgetTableScroll">
+                            <table className="budgetTable budgetExcelTable">
+                                <thead>
                                     <tr>
-                                        <td colSpan="5" className="budgetEmpty">No entries yet for this month.</td>
+                                        <th>Month</th>
+                                        <th>Income</th>
+                                        <th>Savings</th>
+                                        <th>Expenses</th>
+                                        <th>Total</th>
                                     </tr>
-                                ) : monthlyEntries.map((item) => (
-                                    <tr key={item.id}>
-                                        <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString("en-IN") : "-"}</td>
-                                        <td>
-                                            <span className="pill" style={{ color: CATEGORY_COLOR[item.category] }}>
-                                                {item.category}
-                                            </span>
-                                        </td>
-                                        <td>{formatCurrency(item.amount)}</td>
-                                        <td>{item.note || "-"}</td>
-                                        <td>
-                                            <button
-                                                type="button"
-                                                className="btn ghost budgetDeleteBtn"
-                                                onClick={() => handleDeleteEntry(item.id)}
-                                                disabled={isLoading || isSaving}
-                                            >
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {yearlyMatrix.map((row) => (
+                                        <tr key={row.month}>
+                                            <td>{row.month}</td>
+                                            <td>{formatCurrency(row.Income)}</td>
+                                            <td>{formatCurrency(row.Savings)}</td>
+                                            <td>{formatCurrency(row.Expenses)}</td>
+                                            <td><strong>{formatCurrency(row.Total)}</strong></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                )}
             </Section>
         </div>
     );

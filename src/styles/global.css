@@ -747,6 +747,53 @@ hr {
     margin-bottom: 18px;
 }
 
+.budgetKpiGrid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.budgetKpiCard {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--card);
+    padding: 14px;
+}
+
+.budgetPositive {
+    color: #0b7a55;
+}
+
+.budgetNegative {
+    color: #b83535;
+}
+
+.budgetTabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.budgetTab {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.budgetTab.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.12);
+}
+
 .budgetStorageNote {
     margin: 0 0 14px;
 }
@@ -807,6 +854,12 @@ hr {
     margin-top: 20px;
 }
 
+.budgetCategoryGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
 .budgetTableScroll {
     width: 100%;
     overflow-x: auto;
@@ -844,6 +897,15 @@ hr {
     font-size: 0.85rem;
 }
 
+.budgetSingleColumn {
+    grid-template-columns: 1fr;
+}
+
+.budgetExcelTable td,
+.budgetExcelTable th {
+    white-space: nowrap;
+}
+
 .btn:disabled {
     opacity: 0.7;
     cursor: not-allowed;
@@ -855,8 +917,22 @@ hr {
         grid-template-columns: 1fr;
     }
 
+    .budgetKpiGrid {
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+    }
+
+    .budgetCategoryGrid {
+        grid-template-columns: 1fr;
+    }
+
     .budgetActions {
         justify-content: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .budgetKpiGrid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -932,6 +1008,170 @@ hr {
     gap: 0.75rem;
 }
 
+.themeToggle {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(240, 247, 255, 0.88));
+    color: var(--text);
+    border-radius: 999px;
+    min-height: 34px;
+    padding: 4px;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.themeToggle.is-light {
+    border-color: rgba(120, 174, 235, 0.45);
+    background: linear-gradient(180deg, rgba(250, 252, 255, 0.98), rgba(224, 241, 255, 0.94));
+}
+
+.themeToggle.is-dark {
+    border-color: rgba(101, 116, 205, 0.35);
+    background: linear-gradient(180deg, rgba(33, 42, 78, 0.96), rgba(17, 24, 39, 0.98));
+}
+
+.themeToggle:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.themeToggleTrack {
+    position: relative;
+    width: 62px;
+    height: 26px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #8fd3ff 0%, #b9e7ff 38%, #1f2954 62%, #10182f 100%);
+    background-size: 170% 100%;
+    background-position: left center;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.35);
+    transition: background-position 0.24s ease, box-shadow 0.24s ease;
+}
+
+.themeToggle.is-dark .themeToggleTrack {
+    background-position: right center;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.08);
+}
+
+.themeToggleTrack::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0));
+    pointer-events: none;
+}
+
+.themeToggleSky,
+.themeToggleNight {
+    position: relative;
+    z-index: 1;
+    width: 50%;
+    height: 100%;
+}
+
+.themeToggleSky {
+    float: left;
+}
+
+.themeToggleNight {
+    float: right;
+}
+
+.themeToggleCloud,
+.themeToggleCloud::before,
+.themeToggleCloud::after {
+    position: absolute;
+    display: block;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 999px;
+    content: "";
+}
+
+.themeToggleCloudOne {
+    left: 7px;
+    bottom: 6px;
+    width: 10px;
+    height: 4px;
+}
+
+.themeToggleCloudTwo {
+    left: 16px;
+    top: 6px;
+    width: 8px;
+    height: 4px;
+}
+
+.themeToggleCloud::before {
+    width: 5px;
+    height: 5px;
+    left: 1px;
+    top: -2px;
+}
+
+.themeToggleCloud::after {
+    width: 6px;
+    height: 6px;
+    right: 1px;
+    top: -3px;
+}
+
+.themeToggleStar {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(255, 247, 200, 0.95);
+    box-shadow: 0 0 6px rgba(255, 247, 200, 0.7);
+}
+
+.themeToggleStarOne {
+    right: 10px;
+    top: 6px;
+}
+
+.themeToggleStarTwo {
+    right: 18px;
+    bottom: 7px;
+    width: 2px;
+    height: 2px;
+}
+
+.themeToggleStarThree {
+    right: 7px;
+    bottom: 5px;
+    width: 2px;
+    height: 2px;
+}
+
+.themeToggleThumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    background: linear-gradient(180deg, #fff6c7, #ffd86b);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.42) inset;
+    transform: translateX(0);
+    transition: transform 0.24s ease, background-color 0.24s ease, color 0.24s ease, box-shadow 0.24s ease;
+    color: #d97706;
+}
+
+.themeToggle.is-dark .themeToggleThumb {
+    transform: translateX(36px);
+    background: linear-gradient(180deg, #2a3766, #171f39);
+    color: #e2e8ff;
+    box-shadow: 0 2px 8px rgba(7, 10, 20, 0.45), 0 0 0 1px rgba(222, 232, 255, 0.08) inset;
+}
+
 .navUser {
     display: flex;
     align-items: center;
@@ -959,3 +1199,4 @@ hr {
     padding: 6px 14px;
     font-size: 0.85rem;
 }
+
