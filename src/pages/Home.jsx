@@ -12,7 +12,7 @@ export default function Home() {
                         <p className="lead" style={{ fontWeight: 'normal', color: 'var(--muted)' }}>{profile.summary}</p>
 
                         <div className="row">
-                            <a className="btn" href="/assets/Resume.pdf" download="rajkumar_SL_Resume.pdf">
+                            <a className="btn" href="/assets/Resume.pdf" download="Rajkumar_S_Resume.pdf">
                                 Download Resume
                             </a>
                             <Link className="btn ghost" to="/contact">Contact</Link>

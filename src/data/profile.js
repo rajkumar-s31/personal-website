@@ -1,12 +1,14 @@
 export const profile = {
-    name: "rajkumar S L",
-    headline: "Mechanical Design Engineer",
-    location: "Tokyo, Japan",
+    name: "Rajkumar S",
+    headline: "Robotics Systems Engineer",
+    location: "Chennai, India",
     contact: {
-        email: "slrajkumar@gmail.com",
-        linkedin: "https://www.linkedin.com/in/rajkumar-s-l-553045215",
-        github: "https://github.com/heyvasee",
-        instagram: "https://www.instagram.com/rajkumar_sl",
+        email: "rajkumar3110003@gmail.com",
+        linkedin: "https://www.linkedin.com/in/rajkumar-s31/",
+        github: "https://github.com/rajkumar-s",
+        instagram: "https://www.instagram.com/rajkumar_s31/",
+        facebook: "https://www.facebook.com/rajkumars3110/",
+        twitter: "https://x.com/rajkumar_s31",
     },
     summary:
         "A dedicated Mechanical Engineer driven by an interest in research and development. I recognized for unwavering integrity, effective leadership, and a commitment to excellence. I know for motivating and delivering ingenious engineering solutions that push the boundaries of possibility.",
